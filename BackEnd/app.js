@@ -21,9 +21,10 @@ app.use(session({
 // Routes
 const authRoutes = require('./routes/authRoutes');
 const userRoutes = require('./routes/userRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 
 app.use('/api/auth', authRoutes);
 app.use('/api', userRoutes);
-
+app.use('/api/admin',adminRoutes);
 
 module.exports = app;
