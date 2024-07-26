@@ -39,12 +39,8 @@ const givenTestSchema = new mongoose.Schema({
   totalTimeTaken: {
     type: Number,
     required: true,
-  },
-  timestamps: {
-    type: Date,
-    default: Date.now,
-  },
-});
+  }
+},{ timestamps: true });
   
   const GivenTest = mongoose.model('GivenTest', givenTestSchema);
   

@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 
 // User.model.js
 const userSchema = new mongoose.Schema({
+  _id: { type: String, required: true },
     userId: {
       type: String,
       required: true,
@@ -38,7 +39,7 @@ const userSchema = new mongoose.Schema({
       enum: ['super admin', 'admin', 'student'],
       required: true,
     },
-  });
+  },{ timestamps: true });
 
 const User = mongoose.model('User', userSchema);
 

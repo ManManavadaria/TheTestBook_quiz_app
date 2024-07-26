@@ -14,6 +14,38 @@ exports.getAllUsers = async (req, res) => {
     }
 };
 
+exports.getUserByID = async (req,res)=>{
+    try {
+        const {id} = req.body;
+        const user = await User.findById(id);
+        res.status(200).json({ user });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+
+exports.updateUserById = async (req,res)=>{
+    try {
+        const {user} = req.body;
+
+        //admin, super admin check is left to complete
+        const updatedUuser = await User.findByIdAndUpdate(user._id,user);
+        res.status(200).json({ updatedUuser });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+
+exports.deleteUserByID = async (req,res)=>{
+    try {
+        const {id} = req.body;
+        const user = await User.findByIdAndRemove(id);
+        res.status(200).json({ user });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+
 exports.processTestExcel = async (req, res) => {
     if (!req.file) {
         return res.status(400).json({ message: 'No file uploaded' });
@@ -98,6 +130,60 @@ function validateRow(row) {
         throw new Error(`Invalid TimeLimit: ${row.TimeLimit}`);
     }
 }
+
+exports.getAllTests = async (req,res)=>{
+    try {
+        const Tests = await Test.find();
+        res.status(200).json({ Tests });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+
+exports.getTestByID = async (req,res)=>{
+    try {
+        const {id} = req.body;
+        const Test = await Test.findById(id);
+        res.status(200).json({ Tests });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+
+exports.updateTestByID = async (req,res)=>{
+    try {
+        const {test} = req.body;
+        const Test = await Test.findByIdAndUpdate(test._id, test);
+        res.status(200).json({"message":"Test updated successfully" ,Test });
+    } catch (error) {
+        res.status(500).json({ message: 'Server error' });
+    }
+}
+
+exports.deleteTestByID = async (req, res) => {
+    try {
+        const { id } = req.body;
+
+        // Delete the test
+        const deletedTest = await Test.findByIdAndRemove(id);
+        if (!deletedTest) {
+            return res.status(404).json({ message: 'Test not found' });
+        }
+
+        // Remove testId from all users' allowedTests array
+        await User.updateMany(
+            { allowedTests: id },
+            { $pull: { allowedTests: id } }
+        );
+
+        res.status(200).json({ message: 'Test deleted successfully' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Server error' });
+    }
+};
+
+
 
 
 

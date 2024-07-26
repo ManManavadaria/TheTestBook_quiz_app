@@ -26,6 +26,7 @@ const questionSchema = new mongoose.Schema({
   }
   
   const testSchema = new mongoose.Schema({
+    _id: { type: String, required: true },
     testId: {
       type: String,
       required: true,
@@ -44,7 +45,7 @@ const questionSchema = new mongoose.Schema({
       required: true,
     },
     questions: [questionSchema],
-  });
+  },{ timestamps: true });
 
   const Test = mongoose.model('Test',testSchema)
   
