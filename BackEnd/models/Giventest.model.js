@@ -7,7 +7,6 @@ const givenAnswerSchema = new mongoose.Schema({
   },
   givenAnswer: {
     type: String,
-    required: true,
   },
   correctAnswer: {
     type: String,
@@ -24,6 +23,10 @@ const givenTestSchema = new mongoose.Schema({
   test: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Test',
+    required: true,
+  },
+  testName: {
+    type: String,
     required: true,
   },
   score: {

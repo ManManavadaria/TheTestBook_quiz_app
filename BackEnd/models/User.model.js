@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
-
+const Test = require('./Test.model');
 // User.model.js
 const userSchema = new mongoose.Schema({
-  _id: { type: String, required: true },
     userId: {
       type: String,
       required: true,
@@ -40,6 +39,23 @@ const userSchema = new mongoose.Schema({
       required: true,
     },
   },{ timestamps: true });
+
+  userSchema.pre('save', async function (next) {
+    const user = this;
+  
+    // If the user is new and allowedTests is empty, add dummy test IDs
+    if (user.isNew && user.allowedTests.length === 0) {
+      // Find all dummy tests by the isDummy tag
+      const dummyTests = await Test.find({ isDummy: true });
+  
+      // Extract the IDs of the dummy tests and add them to the allowedTests array
+      const dummyTestIds = dummyTests.map(test => test._id);
+      user.allowedTests.push(...dummyTestIds);
+    }
+  
+    next();
+  });
+  
 
 const User = mongoose.model('User', userSchema);
 

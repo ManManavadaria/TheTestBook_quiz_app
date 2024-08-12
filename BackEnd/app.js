@@ -1,22 +1,17 @@
 const express = require('express');
-const app = express();
+const cors = require('cors');
+const mongoose = require('mongoose');
 const path = require('path');
-const session = require('express-session');
+require('dotenv').config();
 
+const app = express();
 
 // Middleware to parse JSON bodies
 app.use(express.json());
 
-app.use(session({
-    secret: "process.env.SESSION_SECRET",
-    resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false }  // Set to true if using HTTPS
-}));
+// CORS configuration
+app.use(cors());
 
-
-// Middleware to log requests
-// app.use(logger);
 
 // Routes
 const authRoutes = require('./routes/authRoutes');

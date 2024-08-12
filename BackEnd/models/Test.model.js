@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
 
-// Test.model.js
+// Helper function for array validation
+function arrayLimit(val) {
+  return val.length === 4;
+}
+
+// Define question schema
 const questionSchema = new mongoose.Schema({
   questionText: {
     type: String,
@@ -9,7 +14,10 @@ const questionSchema = new mongoose.Schema({
   options: {
     type: [String],
     required: true,
-    validate: [arrayLimit, '{PATH} must have 4 options'],
+    validate: {
+      validator: arrayLimit,
+      message: 'options must have 4 options',
+    },
   },
   correctAnswer: {
     type: String,
@@ -20,34 +28,31 @@ const questionSchema = new mongoose.Schema({
     required: true,
   },
 });
-  
-  function arrayLimit(val) {
-    return val.length === 4;
-  }
-  
-  const testSchema = new mongoose.Schema({
-    _id: { type: String, required: true },
-    testId: {
-      type: String,
-      required: true,
-      unique: true,
-    },
-    testName: {
-      type: String,
-      required: true,
-    },
-    subject: {
-      type: String,
-      required: true,
-    },
-    totalTimeLimit: {
-      type: Number,
-      required: true,
-    },
-    questions: [questionSchema],
-  },{ timestamps: true });
 
-  const Test = mongoose.model('Test',testSchema)
-  
-  module.exports = Test;
-  
+// Define test schema
+const testSchema = new mongoose.Schema({
+  testId: {
+    type: String,
+    required: true,
+    unique: true,
+  },
+  testName: {
+    type: String,
+    required: true,
+  },
+  subject: {
+    type: String,
+    required: true,
+  },
+  totalTimeLimit: {
+    type: Number,
+    required: true,
+  },
+  isDummy: { type: Boolean, default: false },
+  questions: [questionSchema],
+}, { timestamps: true });
+
+// Create Test model
+const Test = mongoose.model('Test', testSchema);
+
+module.exports = Test;
