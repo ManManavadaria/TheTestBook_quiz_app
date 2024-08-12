@@ -22,4 +22,9 @@ app.use('/api/auth', authRoutes);
 app.use('/api', userRoutes);
 app.use('/api/admin',adminRoutes);
 
+app.get('/ping', (req, res) => {
+    res.status(200).json({ message: 'pong' });
+});
+
+
 module.exports = app;
