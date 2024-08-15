@@ -16,11 +16,10 @@
             }
 
             const token = jwt.sign(
-                { userId: user.userId, accessLevel: user.accessLevel }, // Include only necessary user data in the token
-                process.env.JWT_SECRET || 'default_secret', // Provide a default secret for development
+                { userId: user.userId, accessLevel: user.accessLevel }, 
+                process.env.JWT_SECRET || 'TheTestBook',
                 { expiresIn: process.env.JWT_EXPIRY || '1d' }
             );
-            console.log(token)
             res.status(200).json({ user, token });
         } catch (error) {
             console.error('Error in getUserById:', error); // Log the error for debugging
@@ -42,7 +41,6 @@
         try {
             const {user} = req.body;
             const id = req.user._id
-            console.log(user)
     
             const updatedUser = await User.findByIdAndUpdate(id,user);
             res.status(200).json({ updatedUser });
@@ -53,7 +51,7 @@
 
     exports.getPopulatedUser = async (req, res) => {
         try {
-            const id = req.user._id; // Assuming req.user contains the user's ID
+            const id = req.user._id;
         
             // Fetch user and populate 'allowedTests' and 'givenTests' with sorting
             const user = await User.findById(id)
@@ -65,10 +63,7 @@
                     path: 'givenTests',
                     model: 'GivenTest',
                     options: { sort: { createdAt: -1 } } // Sort by 'createdAt' in ascending order
-                });
-    
-            console.log(user)
-        
+                });        
             if (!user) {
                 return res.status(404).json({ message: 'User not found' });
             }
@@ -135,9 +130,6 @@
     exports.submitGivenTest = async (req, res) => {
         try {
             const { id, testId, testName,answers, totalTimeTaken } = req.body;
-
-            console.log(id, testId, answers);
-            console.log("totalTimeTaken ====>",totalTimeTaken)
             
             // Find the user
             const user = await User.findById(id);
@@ -168,13 +160,13 @@
 
             // Create the given test object
             const givenTest = new GivenTest({
-                user: user._id, // note change the id in this get from req.id update user and add the givenTest id
+                user: user._id,
                 test: test._id,
                 testName: testName,
                 score,
                 answers: givenAnswers,
-                status: 'completed', // Assuming the status is completed when submitted
-                totalTimeTaken: totalTimeTaken // Assuming totalTimeTaken is sent in the request
+                status: 'completed', 
+                totalTimeTaken: totalTimeTaken 
             });
 
             // Save the given test
@@ -183,9 +175,6 @@
             // Update the user's givenTests array
             user.givenTests.push(givenTest._id);
             await user.save();
-
-            console.log(givenTest);
-
             res.status(200).json({ message: 'Test submitted successfully', givenTest });
         } catch (error) {
             console.error(error);
@@ -198,14 +187,10 @@
         try {
             const { id } = req.body;
 
-            console.log(id)
             // Find the given test by ID and populate user and test references
             const givenTest = await GivenTest.findById(id)
                 .populate('user')
                 .populate('test');
-
-            console.log(givenTest)
-
             if (!givenTest) {
                 return res.status(404).json({ message: 'Given test not found' });
             }

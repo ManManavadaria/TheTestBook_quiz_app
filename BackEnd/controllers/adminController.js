@@ -33,9 +33,6 @@ exports.getPopulatedUser = async (req, res) => {
                 model: 'GivenTest',
                 options: { sort: { createdAt: -1 } } // Optional: example of sorting
             });
-
-        console.log(user)
-
         if (!user) {
             return res.status(404).json({ message: 'User not found' });
         }
@@ -51,7 +48,6 @@ exports.createUser = async (req, res) => {
     try {
         const { name, phoneNumber, schoolId, className } = req.body;
 
-        // console.log(name, phoneNumber, schoolId, className)
         const school = await School.findById(schoolId);
         if (!school) {
             return res.status(404).json({ message: 'School not found' });
@@ -91,7 +87,6 @@ exports.updateUserById = async (req, res) => {
     // schol is new then create new and then add the schoolId to user model
     try {
         const { user } = req.body;
-        console.log(user)
 
         const updatedUser = await User.findByIdAndUpdate(user.id, user);
         res.status(200).json({ updatedUser });
@@ -215,7 +210,6 @@ exports.getAllTests = async (req, res) => {
 exports.getTestByID = async (req, res) => {
     try {
         const { testId } = req.params;
-        console.log(testId);
 
         const test = await Test.findById(testId);
 
@@ -240,7 +234,6 @@ exports.updateTestByID = async (req, res) => {
         const totalTimeLimit = test.questions.reduce((total, question) => total + Number(question.timeLimit), 0);
 
         test.totalTimeLimit = totalTimeLimit;
-        console.log(totalTimeLimit)
 
         const updatedTest = await Test.findByIdAndUpdate(id, test, { new: true });
 
@@ -352,9 +345,6 @@ exports.addTestToUser = async (req, res) => {
             return res.status(400).json({ message: 'User ID and Test ID are required' });
         }
 
-        console.log('User ID:', userId);
-        console.log('Test ID:', testId);
-
         // Check if the test exists
         const test = await Test.findOne({ testId: testId });
 
@@ -362,8 +352,6 @@ exports.addTestToUser = async (req, res) => {
             console.error(`Test not found: ${testId}`);
             return res.status(404).json({ message: 'Test not found' });
         }
-
-        console.log('Test found:', test);
 
         // Update the user's allowedTests array
         const updatedUser = await User.findOneAndUpdate(
@@ -376,9 +364,6 @@ exports.addTestToUser = async (req, res) => {
             console.error(`User not found: ${userId}`);
             return res.status(404).json({ message: 'User not found' });
         }
-
-        console.log('User updated successfully:', updatedUser);
-
         res.status(200).json({ message: 'Test added to user successfully', user: updatedUser });
     } catch (error) {
         console.error('Server error:', error);
@@ -389,8 +374,6 @@ exports.addTestToUser = async (req, res) => {
 exports.getGivenTestsBySchool = async (req, res) => {
     try {
         const { schoolId } = req.params;
-
-        console.log(`Fetching given tests for school ID: ${schoolId}`);
 
         // Fetch all users with the specified school ID and populate their givenTests
         const users = await User.find({ school: schoolId }).populate('givenTests');
@@ -406,24 +389,6 @@ exports.getGivenTestsBySchool = async (req, res) => {
         res.status(500).json({ message: 'Failed to fetch given tests due to a server error' });
     }
 };
-
-
-// exports.getGivenTestsBySchool = async (req, res) => {
-//     try {
-//         const { schoolId } = req.params;
-
-//         console.log(schoolId)
-
-//         const users = await User.find({ school: schoolId }).populate('givenTests');
-
-//         const givenTests = users.flatMap(user => user.givenTests);
-
-//         res.status(200).json({ users });
-//     } catch (error) {
-//         console.error('Error fetching given tests by school:', error);
-//         res.status(500).json({ message: 'Failed to fetch given tests due to a server error' });
-//     }
-// };
 
 exports.getGivenTestsByClass = async (req, res) => {
     try {
@@ -444,8 +409,6 @@ exports.getGivenTestsByClass = async (req, res) => {
 
 exports.AddSchool = async (req, res) => {
     const { schoolName } = req.body;
-
-    console.log(schoolName)
 
     try {
         const newSchool = new School({ schoolName });
@@ -476,8 +439,6 @@ exports.deleteSchool = async (req, res) => {
 exports.editSchool = async (req, res) => {
     const { schoolId } = req.params;
     const { schoolName } = req.body;
-
-    console.log(schoolId, schoolName)
 
     try {
         const updatedSchool = await School.findByIdAndUpdate(

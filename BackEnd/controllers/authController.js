@@ -2,7 +2,7 @@ const PendingRegistration = require('../models/PendingRegistration.model');
 const User = require('../models/User.model');
 const PendingSignIn = require('../models/PendingSignIn.model')
 const School = require('../models/School.model');
-const OTP = require('../models/Otp.model'); // Assuming you have an OTP model
+const OTP = require('../models/Otp.model');
 const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
@@ -61,13 +61,11 @@ exports.register = async (req, res) => {
       otpExpiry: Date.now() + 10 * 60 * 1000 // OTP expires in 10 minutes
     });
 
-    console.log(pendingRegistration)
-
     await pendingRegistration.save();
 
     // sendOTP(otp,phoneNumber)
 
-    res.status(200).json({ message: 'OTP sent successfully. Please verify to complete registration.', userId });
+    res.status(200).json({ message: 'OTP sent successfully. Please verify to complete registration.', userId, otp: pendingRegistration.otp });
   } catch (error) {
     console.error('Registration error:', error);
     res.status(500).json({ message: 'An error occurred during registration. Please try again.' });
@@ -131,11 +129,8 @@ exports.signIn = async (req, res) => {
   try {
     const { userId } = req.body;
 
-    console.log(userId);
-
     // Check if the user exists
     const user = await User.findOne({ userId: userId });
-    console.log(user);
     if (!user) {
       return res.status(404).json({ message: 'User not found. Please check your userId.' });
     }
@@ -143,14 +138,11 @@ exports.signIn = async (req, res) => {
     // Generate OTP
     const otp = crypto.randomInt(100000, 999999).toString();
 
-    // Store OTP and user ID in MongoDB
     await PendingSignIn.findOneAndUpdate(
       { userId },
       { otp, otpExpiry: Date.now() + 10 * 60 * 1000 }, // OTP expires in 10 minutes
       { upsert: true, new: true }
     );
-
-    console.log(otp)
 
     // Send OTP to user via SMS or other means (function not shown here)
     // var ok = sendOTP(otp, user.phoneNumber);
@@ -161,7 +153,7 @@ exports.signIn = async (req, res) => {
     res.status(200).json({
       message: 'OTP sent successfully. Please verify to complete sign-in.',
       userId,
-      otp // Remove this in production, as you should not expose OTP
+      otp
     });
 
   } catch (error) {
@@ -182,12 +174,10 @@ exports.verifySignInOTP = async (req, res) => {
       return res.status(400).json({ message: 'No pending sign-in found. Please initiate sign-in again.' });
     }
 
-    // Check if OTP is correct and not expired
     if (otp !== pendingSignIn.otp || Date.now() > pendingSignIn.otpExpiry) {
       return res.status(400).json({ message: 'Invalid or expired OTP. Please try again.' });
     }
 
-    // Fetch the user
     const user = await User.findOne({ userId: pendingSignIn.userId });
 
     if (!user) {
@@ -222,81 +212,3 @@ exports.verifySignInOTP = async (req, res) => {
     res.status(500).json({ message: 'An error occurred during sign-in verification. Please try again.' });
   }
 };
-
-
-// // controllers/authController.js
-// const bcrypt = require('bcrypt');
-// const jwt = require('jsonwebtoken');
-// const User = require('../models/User.model');
-// const School = require('../models/School.model');
-// const OTP = require('../models/Otp.model');
-
-// // Register a new user
-// exports.register = async (req, res) => {
-//   try {
-//     const { name,phoneNumber,schoolname,classname } = req.body;
-
-//     // Check if user already exists
-//     const existingUser = await User.findOne({ phoneNumber });
-//     if (existingUser) {
-//       return res.status(400).json({ message: 'User already exists' });
-//     }
-
-//     const existingSchool = await School.findOne({schoolName: schoolname})
-//     if (existingSchool){
-//         const schoolId = existingSchool._id
-//     } else {
-//         const schoolObj = {schoolName : schoolname}
-//         newSchool = await School.insertOne(schoolObj);
-//         console.log('Inserted new school:', newSchool.insertedId)
-//         const schoolId = newSchool._id
-//     }
-
-//     id = 'madc534'
-//     const newUser = new User({ userId: id,name: name, phoneNumber: phoneNumber, school: schoolId, class: classname, accessLevel: 'student'});
-//     await newUser.save();
-
-//     //generate otp
-//     otp = 546123
-
-//     const newOTP = new OTP({userId:newUser._id, otp:otp})
-
-
-//     res.status(201).json({ message: 'User registered successfully' });
-//   } catch (error) {
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// };
-
-// exports.verifyOTP = async (req,res)=>{
-// try {
-
-// } catch (error) {
-    
-// }
-// }
-// // Login a user
-// exports.login = async (req, res) => {
-//   try {
-//     const { email, password } = req.body;
-
-//     // Find the user by email
-//     const user = await User.findOne({ email });
-//     if (!user) {
-//       return res.status(401).json({ message: 'Invalid credentials' });
-//     }
-
-//     // Check if the password matches
-//     const isMatch = await bcrypt.compare(password, user.password);
-//     if (!isMatch) {
-//       return res.status(401).json({ message: 'Invalid credentials' });
-//     }
-
-//     // Create a JWT token
-//     const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-
-//     res.json({ token });
-//   } catch (error) {
-//     res.status(500).json({ message: 'Server error' });
-//   }
-// };
