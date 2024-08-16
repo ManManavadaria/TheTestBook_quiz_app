@@ -63,9 +63,11 @@ exports.register = async (req, res) => {
 
     await pendingRegistration.save();
 
-    // sendOTP(otp,phoneNumber)
-
-    res.status(200).json({ message: 'OTP sent successfully. Please verify to complete registration.', userId, otp: pendingRegistration.otp });
+    var ok = sendOTP(otp, phoneNumber);
+    if (!ok) {
+      return res.status(500).json({ message: 'Failed to send OTP. Please try again.' });
+    }
+    res.status(200).json({ message: 'OTP sent successfully. Please verify to complete registration.', userId });
   } catch (error) {
     console.error('Registration error:', error);
     res.status(500).json({ message: 'An error occurred during registration. Please try again.' });
@@ -145,15 +147,14 @@ exports.signIn = async (req, res) => {
     );
 
     // Send OTP to user via SMS or other means (function not shown here)
-    // var ok = sendOTP(otp, user.phoneNumber);
-    // if (!ok) {
-    //   return res.status(500).json({ message: 'Failed to send OTP. Please try again.' });
-    // }
+    var ok = sendOTP(otp, user.phoneNumber);
+    if (!ok) {
+      return res.status(500).json({ message: 'Failed to send OTP. Please try again.' });
+    }
 
     res.status(200).json({
       message: 'OTP sent successfully. Please verify to complete sign-in.',
-      userId,
-      otp
+      userId
     });
 
   } catch (error) {

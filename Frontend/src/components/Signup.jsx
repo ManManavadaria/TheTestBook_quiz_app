@@ -58,7 +58,7 @@ function Signup() {
       if (res.data) {
         toast.success("OTP sent successfully");
         navigate("/otp-signup", {
-          state: { phoneNumber: userInfo.phoneNumber, otpType: "signup" },
+          state: { studentID: res.data.userId, otpType: "signup" },
           replace: true,
         });
       }
@@ -112,8 +112,8 @@ function Signup() {
           ? "#4B5563"
           : "#f0f0f0"
         : theme === "dark"
-        ? "#1E293B"
-        : "white",
+          ? "#1E293B"
+          : "white",
       color: theme === "dark" ? "white" : "black",
     }),
     noOptionsMessage: (provided) => ({
@@ -206,8 +206,9 @@ function Signup() {
               <p className="sm:text-xl text-base">
                 Have account?{" "}
                 <button
+                  type="button"
                   className="underline text-blue-500 cursor-pointer"
-                  onClick={() => document.getElementById("my_modal_3").showModal()}
+                  onClick={() => navigate(-1)}
                 >
                   Login
                 </button>{" "}
