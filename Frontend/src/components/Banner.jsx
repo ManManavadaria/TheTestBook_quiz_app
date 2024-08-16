@@ -1,5 +1,5 @@
 import React from "react";
-import banner from "../../public/Banner-removebg.png";
+import banner from "../../public/Banner-removebg.webp";
 import {Link} from "react-router-dom"
 function Banner() {
   return (

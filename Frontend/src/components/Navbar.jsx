@@ -1,5 +1,6 @@
 import React, { useEffect } from "react";
 import { useState } from "react";
+import {Link} from "react-router-dom";  
 import Login from "./Login";
 import Logout from "./Logout";
 import { useAuth } from "../context/AuthProvider";
@@ -39,16 +40,16 @@ function Navbar() {
   const navItems = (
     <>
       <li>
-        <a href="/">Home</a>
+        <Link to="/">Home</Link>
       </li>
       <li>
-        <a href="/tests">Tests</a>
+        <Link to="/tests">Tests</Link>
       </li>
       <li>
-        <a href="/profile">Profile</a>
+        <Link to="/profile">Profile</Link>
       </li>
       {/* <li>
-        <a>About</a>
+        <Link>About</Link>
       </li> */}
     </>
   );
