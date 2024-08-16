@@ -1,6 +1,6 @@
 const PendingRegistration = require('../models/PendingRegistration.model');
 const User = require('../models/User.model');
-const PendingSignIn = require('../models/PendingSignIn.model')
+const PendingSignIn = require('../models/PendingSignIn.model');
 const School = require('../models/School.model');
 const OTP = require('../models/Otp.model');
 const { v4: uuidv4 } = require('uuid');
@@ -8,9 +8,8 @@ const jwt = require('jsonwebtoken');
 const crypto = require('crypto');
 const axios = require('axios');
 
-
- async function sendOTP(otp, phoneNumber) {
-        // Send OTP to user's phone number using Fast2SMS
+async function sendOTP(otp, phoneNumber) {
+  try {
     const fast2smsResponse = await axios.post('https://www.fast2sms.com/dev/bulkV2', {
       variables_values: otp.toString(),
       route: 'otp',
@@ -22,35 +21,42 @@ const axios = require('axios');
     });
 
     if (fast2smsResponse.data.return === false) {
-        return false
-    }    
-    return true
+      return false;
+    }
+    return true;
+  } catch (error) {
+    console.error('Error sending OTP:', error.message);
+    return false;
+  }
 }
-
 
 exports.register = async (req, res) => {
   try {
     const { name, phoneNumber, schoolName, className } = req.body;
 
+    // Check if user already exists
     const existingUser = await User.findOne({ phoneNumber });
     if (existingUser) {
       return res.status(409).json({ message: 'User already exists. Please sign in.', redirect: '/signin' });
     }
 
+    // Find or create school
     let school = await School.findOne({ schoolName });
     if (!school) {
       school = new School({ schoolName });
       await school.save();
     }
 
+    // Generate userId
     const schoolInitials = schoolName.split(' ').map(word => word.charAt(0).toUpperCase()).join('');
     const classInitial = className.trim().charAt(0);
     const uniqueCode = uuidv4().replace(/-/g, '').substring(0, 6);
-    
     const userId = `${schoolInitials}_${classInitial}_${uniqueCode}`;
 
+    // Generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000);
 
+    // Create pending registration record
     const pendingRegistration = new PendingRegistration({
       userId,
       name,
@@ -63,13 +69,15 @@ exports.register = async (req, res) => {
 
     await pendingRegistration.save();
 
-    var ok = sendOTP(otp, phoneNumber);
-    if (!ok) {
+    // Send OTP
+    const otpSent = await sendOTP(otp, phoneNumber);
+    if (!otpSent) {
       return res.status(500).json({ message: 'Failed to send OTP. Please try again.' });
     }
+
     res.status(200).json({ message: 'OTP sent successfully. Please verify to complete registration.', userId });
   } catch (error) {
-    console.error('Registration error:', error);
+    console.error('Registration error:', error.message);
     res.status(500).json({ message: 'An error occurred during registration. Please try again.' });
   }
 };
@@ -78,7 +86,7 @@ exports.verifyRegistrationOTP = async (req, res) => {
   try {
     const { otp, userId } = req.body;
 
-    const pendingRegistration = await PendingRegistration.findOne({ userId: userId });
+    const pendingRegistration = await PendingRegistration.findOne({ userId });
     if (!pendingRegistration) {
       return res.status(400).json({ message: 'No pending registration found. Please register first.' });
     }
@@ -87,6 +95,7 @@ exports.verifyRegistrationOTP = async (req, res) => {
       return res.status(400).json({ message: 'Invalid or expired OTP. Please try again.' });
     }
 
+    // Create user
     let user = await User.findOne({ userId });
     if (!user) {
       user = new User({
@@ -121,18 +130,17 @@ exports.verifyRegistrationOTP = async (req, res) => {
       }
     });
   } catch (error) {
-    console.error('OTP verification error:', error);
+    console.error('OTP verification error:', error.message);
     res.status(500).json({ message: 'An error occurred during OTP verification. Please try again.' });
   }
 };
-
 
 exports.signIn = async (req, res) => {
   try {
     const { userId } = req.body;
 
     // Check if the user exists
-    const user = await User.findOne({ userId: userId });
+    const user = await User.findOne({ userId });
     if (!user) {
       return res.status(404).json({ message: 'User not found. Please check your userId.' });
     }
@@ -146,9 +154,9 @@ exports.signIn = async (req, res) => {
       { upsert: true, new: true }
     );
 
-    // Send OTP to user via SMS or other means (function not shown here)
-    var ok = sendOTP(otp, user.phoneNumber);
-    if (!ok) {
+    // Send OTP
+    const otpSent = await sendOTP(otp, user.phoneNumber);
+    if (!otpSent) {
       return res.status(500).json({ message: 'Failed to send OTP. Please try again.' });
     }
 
@@ -158,11 +166,10 @@ exports.signIn = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Sign-in error:', error);
+    console.error('Sign-in error:', error.message);
     res.status(500).json({ message: 'An error occurred during sign-in. Please try again.' });
   }
 };
-
 
 exports.verifySignInOTP = async (req, res) => {
   try {
@@ -170,7 +177,6 @@ exports.verifySignInOTP = async (req, res) => {
 
     // Check if there is a pending sign-in record
     const pendingSignIn = await PendingSignIn.findOne({ userId });
-
     if (!pendingSignIn) {
       return res.status(400).json({ message: 'No pending sign-in found. Please initiate sign-in again.' });
     }
@@ -180,7 +186,6 @@ exports.verifySignInOTP = async (req, res) => {
     }
 
     const user = await User.findOne({ userId: pendingSignIn.userId });
-
     if (!user) {
       return res.status(404).json({ message: 'User not found. Please contact support.' });
     }
@@ -209,7 +214,7 @@ exports.verifySignInOTP = async (req, res) => {
     });
 
   } catch (error) {
-    console.error('Sign-in OTP verification error:', error);
+    console.error('Sign-in OTP verification error:', error.message);
     res.status(500).json({ message: 'An error occurred during sign-in verification. Please try again.' });
   }
 };
