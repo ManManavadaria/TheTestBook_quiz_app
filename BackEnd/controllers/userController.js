@@ -15,7 +15,7 @@ exports.getUserById = async (req, res) => {
         }
 
         const token = jwt.sign(
-            { userId: user.userId, accessLevel: user.accessLevel }, 
+            { userId: user.userId, accessLevel: user.accessLevel },
             process.env.JWT_SECRET || 'TheTestBook',
             { expiresIn: process.env.JWT_EXPIRY || '1d' }
         );
@@ -43,6 +43,18 @@ exports.updateUserById = async (req, res) => {
 
         if (!user) {
             return res.status(400).json({ message: 'User data is required' });
+        }
+
+        if (user.school) {
+            let school = await School.findOne({ schoolName: user.school });
+
+            if (!school) {
+                school = new School({ schoolName: user.school });
+                await school.save();
+            }
+
+            // Assign the school ID to user.school
+            user.school = school._id;
         }
 
         const updatedUser = await User.findByIdAndUpdate(id, user, { new: true });
@@ -96,7 +108,7 @@ exports.addTestToUsersBySchoolID = async (req, res) => {
             return res.status(404).json({ message: 'Test not found' });
         }
 
-            const school = await School.findOne({ schoolId });
+        const school = await School.findOne({ schoolId });
         if (!school) {
             return res.status(404).json({ message: 'School not found' });
         }
@@ -209,7 +221,7 @@ exports.getGivenTestByID = async (req, res) => {
         const givenTest = await GivenTest.findById(id)
             .populate('user')
             .populate('test');
-        
+
         if (!givenTest) {
             return res.status(404).json({ message: 'Given test not found' });
         }

@@ -50,8 +50,8 @@ exports.register = async (req, res) => {
     // Generate userId
     const schoolInitials = schoolName.split(' ').map(word => word.charAt(0).toUpperCase()).join('');
     const classInitial = className.trim().charAt(0);
-    const uniqueCode = uuidv4().replace(/-/g, '').substring(0, 6);
-    const userId = `${schoolInitials}_${classInitial}_${uniqueCode}`;
+    const uniqueCode = uuidv4().replace(/-/g, '').substring(0, 4);
+    const userId = `${schoolInitials}-${classInitial}-${uniqueCode}`;
 
     // Generate OTP
     const otp = Math.floor(100000 + Math.random() * 900000);

@@ -47,8 +47,7 @@ function OtpSignup() {
         toast.success('OTP verified successfully');
         // Store the token in local storage
         localStorage.setItem('token', response.data.token);
-        // Navigate to the root page
-        navigate('/');
+         window.location.href = '/';
       }
     } catch (error) {
       toast.error('Error verifying OTP: ' + (error.response?.data?.message || error.message));

@@ -4,11 +4,12 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "./Navbar";
 
 function UserProfile() {
-  const [user, setUser] = useState({});
+  const [user, setUser] = useState(null);
   const [givenTests, setGivenTests] = useState([]);
   const [allowedTests, setAllowedTests] = useState([]);
   const [schools, setSchools] = useState([]);
   const [expandedTestId, setExpandedTestId] = useState(null);
+  const [loading, setLoading] = useState(true);  // Loading state
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -16,40 +17,47 @@ function UserProfile() {
       const token = localStorage.getItem("token");
       const id = localStorage.getItem("ID");
 
-      if (token && id) {
-        try {
-          // Fetch user data
-          const userResponse = await axios.get(`${import.meta.env.VITE_API_URL}/user-details`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          const userData = userResponse.data;
-          setUser(userData);
-          setGivenTests(userData.givenTests);
-          setAllowedTests(userData.allowedTests);
+      if (!token) {
+        navigate('/'); 
+        return;
+      }
 
-          // Fetch school list
-          const schoolsResponse = await axios.get(`${import.meta.env.VITE_API_URL}/schools`);
-          setSchools(schoolsResponse.data.schools);
-        } catch (error) {
-          console.error("Error fetching user data:", error);
-        }
+      try {
+        // Fetch user data
+        const userResponse = await axios.get(`${import.meta.env.VITE_API_URL}/user-details`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        const userData = userResponse.data;
+        setUser(userData);
+        setGivenTests(userData.givenTests || []);
+        setAllowedTests(userData.allowedTests || []);
+
+        // Fetch school list
+        const schoolsResponse = await axios.get(`${import.meta.env.VITE_API_URL}/schools`);
+        setSchools(schoolsResponse.data.schools);
+
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        // Handle error: you can show an error message or redirect
+      } finally {
+        setLoading(false);  // Stop loading
       }
     };
 
     fetchUserData();
-  }, []);
+  }, [navigate]);
 
   const getInitials = (name) => {
-    if (!name) return ""; // Handle null or undefined names
+    if (!name) return ""; 
     return name
       .split(" ")
       .map((word) => word[0].toUpperCase())
       .join("");
   };
 
-  const handleTestClick = (testId) => {
+  const toggleTestDetails = (testId) => {
     setExpandedTestId(expandedTestId === testId ? null : testId);
   };
 
@@ -63,18 +71,23 @@ function UserProfile() {
     return school ? school.schoolName : "Unknown School";
   };
 
+  if (loading) {
+    return <div>Loading...</div>;  // Loading state feedback
+  }
+
   return (
     <>
-      <Navbar/>
+      <Navbar />
       <div className="justify-center max-w-screen-2xl container mx-auto md:px-20 px-4 flex flex-col py-4 mt-14">
         <div className="h-fit p-6 shadow-xl border-2 border-gray-300 rounded-lg dark:border-gray-700 bg-white dark:bg-slate-800 text-black dark:text-white flex flex-col items-center mx-4">
           <div className="w-24 h-24 flex items-center justify-center rounded-full bg-pink-500 text-white text-3xl font-bold mb-4">
-            {getInitials(user.name || "")}
+            {getInitials(user?.name || "User")}
           </div>
-          <h1 className="text-2xl md:text-4xl mb-4">{user.name || "User Name"}</h1>
-          <p className="text-md mb-2">{user.phoneNumber || "Phone Number"}</p>
-          <p className="text-md mb-2">{getSchoolNameById(user.school) || "School"}</p>
-          <p className="text-md mb-4">{user.class || "Class"}</p>
+          <h1 className="text-xl md:text-4xl mb-4">{user?.userId || "Student ID"}</h1>
+          <p className="text-md mb-2">{user?.name || "User Name"}</p>
+          <p className="text-md mb-2">{user?.phoneNumber || "Phone Number"}</p>
+          <p className="text-md mb-2">{getSchoolNameById(user?.school) || "School"}</p>
+          <p className="text-md mb-4">{user?.class || "Class"}</p>
           <button
             className="btn btn-secondary shadow-xl hover:scale-105 duration-200 mb-6"
             onClick={() => navigate("/update-profile")}
@@ -88,15 +101,15 @@ function UserProfile() {
                 givenTests.map((test) => (
                   <div
                     key={test._id}
-                    className="px-4 py-2 rounded-md border shadow-xl bg-white text-black dark:bg-slate-700 dark:text-white" 
+                    className="px-4 py-2 rounded-md border shadow-xl bg-white text-black dark:bg-slate-700 dark:text-white"
                   >
                     <div
-                      onClick={() => handleTestClick(test._id)}
+                      onClick={() => toggleTestDetails(test._id)}
                       className="cursor-pointer mb-2 "
                     >
                       <h3 className="text-lg font-semibold">Test Name: {getTestNameById(test.test)}</h3>
                       <p className="text-md">Score: {test.score || "0"}</p>
-                      <p className="text-md">Submitted On: {new Date(test.createdAt).toLocaleString() || "undefined"}</p>
+                      <p className="text-md">Submitted On: {new Date(test.createdAt).toLocaleString()}</p>
                     </div>
                     {expandedTestId === test._id && (
                       <div className="mt-4">

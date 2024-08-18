@@ -58,7 +58,10 @@ exports.createUser = async (req, res) => {
             return res.status(404).json({ message: 'School not found' });
         }
 
-        const userId = `TTB_${school.schoolName.substring(0, 3).toUpperCase()}_${className.substring(0, 3).toUpperCase()}_${uuidv4().substring(0, 6)}`;
+        const schoolInitials = schoolName.split(' ').map(word => word.charAt(0).toUpperCase()).join('');
+        const classInitial = className.trim().charAt(0);
+        const uniqueCode = uuidv4().replace(/-/g, '').substring(0, 4);
+        const userId = `${schoolInitials}-${classInitial}-${uniqueCode}`;
 
         const newUser = new User({
             userId,
