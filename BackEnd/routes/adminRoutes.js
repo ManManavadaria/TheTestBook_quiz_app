@@ -27,6 +27,7 @@ router.post('/class',adminAuth.authAdminJWT,adminController.addClass)
 router.put('/class/:classId',adminAuth.authAdminJWT,adminController.editClass)
 router.get('/submitted-tests/:schoolId',adminAuth.authAdminJWT,adminController.getGivenTestsBySchool)
 router.post('/submitted-tests',adminAuth.authAdminJWT,adminController.getGivenTestsByClass)
+router.get('/feedbacks',adminAuth.authAdminJWT,adminController.getAllFeedbacks)
 
 router.post('/upload-test', 
     express.json(),

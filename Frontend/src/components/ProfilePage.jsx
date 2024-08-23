@@ -50,10 +50,11 @@ function UserProfile() {
   }, [navigate]);
 
   const getInitials = (name) => {
-    if (!name) return ""; 
+    if (!name) return "";
     return name
       .split(" ")
-      .map((word) => word[0].toUpperCase())
+      .filter(word => word) 
+      .map(word => word[0].toUpperCase())
       .join("");
   };
 

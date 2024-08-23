@@ -77,7 +77,7 @@ function AdminUserDetail() {
           (classOption) => classOption.label === userData.class
         );
         if (defaultClassOption) {
-          setDefaultClass(defaultClassOption.value);
+          setDefaultClass(defaultClassOption.label);
         }
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -307,7 +307,7 @@ function AdminUserDetail() {
                 >
                   <option value="">Select a class</option>
                   {classes.map((classOption) => (
-                    <option key={classOption.value} value={classOption.value}>
+                    <option key={classOption.label} value={classOption.label}>
                       {classOption.label}
                     </option>
                   ))}

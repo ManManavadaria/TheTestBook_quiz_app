@@ -22,4 +22,8 @@ router.get('/classes',userController.getAllClasses)
 
 router.get('/schools',userController.getAllSchools);
 
+router.post('/submit-feedback',userController.submitFeedback)
+
+router.post('/find-user-id',userController.findStudentId)
+
 module.exports = router;

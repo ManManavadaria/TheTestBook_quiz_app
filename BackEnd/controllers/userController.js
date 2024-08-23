@@ -4,6 +4,7 @@ const Test = require('../models/Test.model');
 const School = require('../models/School.model');
 const Class = require('../models/Class.model');
 const GivenTest = require('../models/Giventest.model');
+const Feedback = require('../models/Feedback.model')
 const jwt = require('jsonwebtoken'); // Ensure jwt is imported
 
 exports.getUserById = async (req, res) => {
@@ -210,6 +211,31 @@ exports.submitGivenTest = async (req, res) => {
     }
 };
 
+exports.submitFeedback = async (req, res) => {
+    try {
+      const { testId, userId, feedback } = req.body;
+      console.log(testId, userId, feedback)
+  
+      if (!testId || !userId || !feedback) {
+        return res.status(400).json({ message: "Test ID, User ID, and Feedback are required" });
+      }
+  
+      const feedbackEntry = new Feedback({
+        testId: testId,
+        userId: userId,
+        feedbackText: feedback,
+      });
+  
+      await feedbackEntry.save();
+  
+      res.status(200).json({ message: "Feedback submitted successfully" });
+    } catch (error) {
+      console.error("Error submitting feedback:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  };
+  
+
 exports.getGivenTestByID = async (req, res) => {
     try {
         const { id } = req.body;
@@ -242,3 +268,25 @@ exports.getAllClasses = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+
+exports.findStudentId = async (req, res) => {
+    const { phoneNumber } = req.body;
+  
+    if (!phoneNumber) {
+      return res.status(400).json({ message: 'Phone number is required' });
+    }
+  
+    try {
+      const user = await User.findOne({ phoneNumber });
+  
+      if (user) {
+        res.status(200).json({ userId: user.userId });
+      } else {
+        res.status(200).json({ message: 'No user found with this phone number' });
+      }
+    } catch (error) {
+      console.error('Error finding user ID:', error);
+      res.status(500).json({ message: 'An error occurred while searching for the user' });
+    }
+  };
+  

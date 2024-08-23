@@ -85,7 +85,7 @@ function UpdateProfile() {
     const updatedInfo = {
       name: data.name,
       phoneNumber: data.phoneNumber,
-      school: data.school.__isNew__ ? data.school.value : data.school.value,
+      school: data.school.__isNew__ ? data.school.label : data.school.label,
       class: selectedClass ? selectedClass.label : "", // Send className instead of id
     };
 

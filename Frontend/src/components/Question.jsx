@@ -35,9 +35,11 @@ function Question() {
     }
   }, [theme]);
 
-  if (!test || !test.questions) {
-    return <div>No test data available.</div>;
-  }
+  useEffect(() => {
+    if (!test || !test.questions) {
+      navigate("/tests", { replace: true });
+    }
+  }, [test, navigate]);
 
   const question = test.questions[currentQuestionIndex];
 
@@ -129,9 +131,9 @@ function Question() {
               },
             }
           );
-          console.log(response.data.givenTest._id);
-          navigate("/results", {
-            state: { SubmittedTestId: response.data.givenTest._id },
+          navigate("/feedback", {
+            state: { TestId: testId },
+            replace: true,
           });
         } catch (error) {
           console.error("Error submitting test:", error);

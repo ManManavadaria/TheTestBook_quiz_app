@@ -4,6 +4,7 @@ const fs = require('fs');
 const Test = require('../models/Test.model');
 const School = require('../models/School.model');
 const Class = require('../models/Class.model');
+const Feedback = require('../models/Feedback.model')
 const GivenTest = require('../models/Giventest.model');
 const { v4: uuidv4 } = require('uuid');
 
@@ -58,7 +59,7 @@ exports.createUser = async (req, res) => {
             return res.status(404).json({ message: 'School not found' });
         }
 
-        const schoolInitials = schoolName.split(' ').map(word => word.charAt(0).toUpperCase()).join('');
+        const schoolInitials = school.schoolName.split(' ').map(word => word.charAt(0).toUpperCase()).join('');
         const classInitial = className.trim().charAt(0);
         const uniqueCode = uuidv4().replace(/-/g, '').substring(0, 4);
         const userId = `${schoolInitials}-${classInitial}-${uniqueCode}`;
@@ -499,5 +500,27 @@ exports.deleteClass = async (req, res) => {
     } catch (error) {
         console.error("Error deleting class:", error);
         res.status(500).json({ message: "Internal server error" });
+    }
+};
+
+exports.getAllFeedbacks = async (req, res) => {
+    try {
+        const feedbacks = await Feedback.find()
+            .populate({
+                path: 'userId',
+                select: 'userId', // Specify fields to include from User
+                model: User
+            })
+            .populate({
+                path: 'testId',
+                select: 'testName', // Specify fields to include from Test
+                model: Test
+            })
+            .exec();
+
+        res.status(200).json(feedbacks);
+    } catch (error) {
+        console.error('Error fetching feedbacks:', error);
+        res.status(500).json({ message: 'Error fetching feedbacks', error: error.message });
     }
 };

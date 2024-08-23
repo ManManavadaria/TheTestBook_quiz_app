@@ -1,5 +1,5 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 import Login from "../Login";
 import Logout from "../Logout";
 import { useAuth } from "../../context/AuthProvider";
@@ -41,16 +41,19 @@ function AdminNavbar() {
   const adminNavItems = (
     <>
       <li>
-        <a href="/admin/tests">Tests</a>
+        <Link to="/admin/tests">Tests</Link>
       </li>
       <li>
-        <a href="/admin">Users</a>
+        <Link to="/admin">Users</Link>
       </li>
       <li>
-        <a href="/admin/schools">Schools</a>
+        <Link to="/admin/schools">Schools</Link>
       </li>
       <li>
-        <a href="/admin/classes">Classes</a>
+        <Link to="/admin/classes">Classes</Link>
+      </li>
+      <li>
+        <Link to="/admin/feedbacks">Feedbacks</Link>
       </li>
     </>
   );

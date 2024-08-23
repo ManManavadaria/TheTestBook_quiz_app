@@ -20,6 +20,9 @@ import AdminTests from "./components/admin/AdminTests";
 import AdminEditTest from "./components/admin/AdminEditTest";
 import AdminCreateTest from "./components/admin/AdminCreateTest";
 import AdminAuthProvider, { useAdminAuth } from "./context/AdminAuthProvider";
+import NotFound from "./components/NotFound";
+import Feedback from "./components/Feedback";
+import Feedbacks from "./components/admin/Feedbacks";
 
 function App() {
   const [authUser] = useAuth();
@@ -51,8 +54,9 @@ function App() {
           />
           <Route path="/signup" element={<Signup />} />
           <Route path="/otp-signup" element={<OtpSignup />} />
-          <Route path="/test" element={authUser ? <QuizInfo />  : <Navigate to="/signup" />} />
-          <Route path="/question" element={authUser ? <Question />  : <Navigate to="/signup" />} />
+          <Route path="/test" element={authUser ? <QuizInfo /> : <Navigate to="/signup" />} />
+          <Route path="/question" element={authUser ? <Question /> : <Navigate to="/signup" />} />
+          <Route path="/feedback" element={authUser ? <Feedback /> : <Navigate to="/signup" />} />
           <Route path="/results" 
           element={authUser ? <ScoreCard /> : <Navigate to="/signup" />}
           /> 
@@ -76,10 +80,13 @@ function App() {
                   <Route path="tests" element={<AdminTests />} />
                   <Route path="test/:testId" element={<AdminEditTest />} />
                   <Route path="create-test" element={<AdminCreateTest />} />
+                  <Route path="feedbacks" element={<Feedbacks />} /> 
+                  <Route path="*" element={<NotFound />} /> 
                 </Routes>
               </AdminAuthProvider>
             }
           />
+          <Route path="*" element={<NotFound />} /> 
         </Routes>
         <Toaster />
       </div>

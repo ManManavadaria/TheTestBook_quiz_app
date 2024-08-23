@@ -137,7 +137,9 @@ exports.verifyRegistrationOTP = async (req, res) => {
 
 exports.signIn = async (req, res) => {
   try {
-    const { userId } = req.body;
+    var { userId } = req.body;
+
+    userId = userId.trim();
 
     // Check if the user exists
     const user = await User.findOne({ userId });
