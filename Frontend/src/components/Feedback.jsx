@@ -55,7 +55,7 @@ function Feedback() {
       <div className="w-full max-w-2xl p-6 shadow-xl border-2 border-gray-300 rounded-lg dark:border-gray-700 bg-white dark:bg-slate-800 text-black dark:text-white">
         <h1 className="text-2xl md:text-4xl mb-4 text-center">We Value Your Feedback</h1>
         <textarea
-          className="w-full p-4 mb-4 rounded-md border shadow-xl dark:bg-slate-700 dark:text-white dark:border-gray-700"
+          className="w-full p-4 mb-4 rounded-md border dark:bg-slate-700 dark:text-white dark:border-gray-700 bg-white text-black border-gray-300 shadow-xl"
           rows="5"
           placeholder="Please share your thoughts about the test..."
           value={feedbackText}
