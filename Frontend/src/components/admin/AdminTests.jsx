@@ -16,9 +16,7 @@ function AdminTests() {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        console.log(response.data)
         setTests(response.data.Tests);
-        console.log(tests)
       } catch (error) {
         console.error("Error fetching tests:", error);
       }
@@ -76,7 +74,6 @@ function AdminTests() {
                   <td className="border px-4 py-2">
                     {new Date(test.createdAt).toUTCString()}
                   </td>
-                  {console.log(test.isDummy)}
                   <td className="border px-4 py-2">{test.isDummy.toString()}</td>
                   <td className="border px-4 py-2">
                     <button

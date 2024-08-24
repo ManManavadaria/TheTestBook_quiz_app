@@ -5,9 +5,7 @@ import PropTypes from "prop-types";
 function Cards({ item }) {
   const navigate = useNavigate();
 
-  console.log(item)
   const handleClick = () => {
-    console.log(item);
     navigate('/test', { state: { test: item } });
   };
 

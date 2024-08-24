@@ -17,7 +17,6 @@ export default function AdminAuthProvider({ children }) {
     } else {
       try {
         const decodedToken = jwtDecode(token);
-        console.log(decodedToken)
         if (decodedToken.accessLevel === "admin" || decodedToken.accessLevel === "super admin") {
           setAdminUser(decodedToken);
         } else {

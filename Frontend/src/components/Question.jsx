@@ -131,8 +131,9 @@ function Question() {
               },
             }
           );
-          navigate("/feedback", {
-            state: { TestId: testId },
+
+          navigate("/results", {
+            state: { SubmittedTestId: response.data.givenTest._id, TestId: testId },
             replace: true,
           });
         } catch (error) {

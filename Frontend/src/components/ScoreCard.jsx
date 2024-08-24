@@ -5,8 +5,7 @@ import axios from "axios";
 function ScoreCard() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { SubmittedTestId } = location.state || {}; // Ensure to pass the SubmittedTestId from the previous page
-  console.log(SubmittedTestId);
+  const { SubmittedTestId, TestId } = location.state || {};
 
   const [score, setScore] = useState(null);
   const [answers, setAnswers] = useState([]);
@@ -29,11 +28,9 @@ function ScoreCard() {
               },
             }
           );
-          console.log(response.data);
 
           setScore(response.data.givenTest.score);
           setAnswers(response.data.givenTest.answers);
-          console.log(response.data.givenTest.test);
           setTestName(response.data.givenTest.test.testName);
         } catch (err) {
           setError("Failed to fetch result");
@@ -50,8 +47,16 @@ function ScoreCard() {
     navigate("/tests");
   };
 
+  const handleGiveFeedback = () => {
+    if (TestId) {
+      navigate("/feedback", { state: { TestId } });
+    } else {
+      alert("Test ID not available for feedback.");
+    }
+  };
+
   if (error) {
-    return <div>{error}</div>;
+    return <div className="container mx-auto p-4 text-red-500">{error}</div>;
   }
 
   return (
@@ -64,21 +69,25 @@ function ScoreCard() {
             <p className="text-lg mb-2">Score: {score}</p>
             <ul>
               {answers.map((item, index) => (
-                <li key={index} className="mb-2">
+                <li key={index} className="mb-4">
                   <strong>Question {index + 1}:</strong> {item.questionText}
                   <br />
-                  <div className="flex flex-col gap-2">
+                  <div className="flex flex-col gap-2 mt-2">
                     <button
                       className={`px-4 py-2 rounded-md border shadow-xl ${
                         item.givenAnswer === item.correctAnswer
                           ? "bg-green-500 text-white"
                           : "bg-red-500 text-white"
                       }`}
+                      disabled
                     >
                       Your Answer: {item.givenAnswer}
                     </button>
                     {item.givenAnswer !== item.correctAnswer && (
-                      <button className="px-4 py-2 rounded-md border shadow-xl bg-green-500 text-white">
+                      <button
+                        className="px-4 py-2 rounded-md border shadow-xl bg-green-500 text-white"
+                        disabled
+                      >
                         Correct Answer: {item.correctAnswer}
                       </button>
                     )}
@@ -88,15 +97,24 @@ function ScoreCard() {
             </ul>
           </div>
         </div>
-        <button
-          className="btn btn-secondary shadow-xl hover:scale-105 duration-200"
-          onClick={handleBackToTests}
-        >
-          Back to Tests
-        </button>
+        {/* Buttons Section */}
+        <div className="flex space-x-4 mt-4">
+          <button
+            className="btn btn-secondary shadow-xl hover:scale-105 duration-200"
+            onClick={handleBackToTests}
+          >
+            Back to Tests
+          </button>
+          <button
+            className="btn btn-primary shadow-xl hover:scale-105 duration-200"
+            onClick={handleGiveFeedback}
+          >
+            Give Feedback
+          </button>
+        </div>
       </div>
     </div>
-  );    
+  );
 }
 
 export default ScoreCard;

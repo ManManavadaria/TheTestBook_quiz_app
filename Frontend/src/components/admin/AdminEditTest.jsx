@@ -45,7 +45,6 @@ function AdminEditTest() {
       try {
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/schools`);
         setSchools(response.data.schools);
-        console.log(schools)
       } catch (error) {
         console.error("Error fetching schools:", error);
       }

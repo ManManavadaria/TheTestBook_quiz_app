@@ -8,8 +8,6 @@ export async function validateToken(token) {
       }
     });
 
-    console.log(response)
-    // Assuming the backend returns { user, updatedToken }
     return {
       user: response.data.user,
       updatedToken: response.data.token
