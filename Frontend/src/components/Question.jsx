@@ -197,7 +197,7 @@ function Question() {
                 onClick={() => handleOptionChange(option)}
                 className={`px-4 py-2 rounded-md border shadow-xl hover:scale-105 duration-200 ${
                   userAnswers[currentQuestionIndex] === option
-                    ? "bg-pink-500 text-white"
+                    ? "bg-[#ff33cc] text-white"
                     : "bg-white text-black border-gray-300 dark:bg-slate-700 dark:text-white"
                 }`}
               >

@@ -10,7 +10,8 @@ function ScoreCard() {
   const [score, setScore] = useState(null);
   const [answers, setAnswers] = useState([]);
   const [testName, setTestName] = useState("");
-  const [timeTaken, setTime] = useState(null)
+  const [questionsLength, setQuestionsLength] = useState(null);
+  const [timeTaken, setTime] = useState(null);
   const [error, setError] = useState(null);
   const token = localStorage.getItem("token");
 
@@ -33,6 +34,7 @@ function ScoreCard() {
           setScore(response.data.givenTest.score);
           setAnswers(response.data.givenTest.answers);
           setTestName(response.data.givenTest.test.testName);
+          setQuestionsLength(response.data.givenTest.answers.length);
           setTime(response.data.givenTest.totalTimeTaken);
         } catch (err) {
           setError("Failed to fetch result");
@@ -68,8 +70,9 @@ function ScoreCard() {
         <div className="mb-6 w-full">
           <h2 className="text-xl mb-4">Test: {testName}</h2>
           <div className="grid gap-4">
-            <p className="text-lg mb-2">Score: {score}</p>
-            <p className="text-md mb-2">Total Time Taken: {timeTaken !== null ? `${timeTaken.toFixed(3)} m` : "Loading..."}</p>{/* <ul>
+          <p className="text-lg mb-2">Score: {score} / {questionsLength}</p>
+          <p className="text-md mb-2">Total Time Taken: {timeTaken !== null ? `${timeTaken.toFixed(3)} m` : "Loading..."}</p>
+            {/* <ul>
               {answers.map((item, index) => (
                 <li key={index} className="mb-4">
                   <strong>Question {index + 1}:</strong> {item.questionText}
@@ -99,7 +102,6 @@ function ScoreCard() {
             </ul> */}
           </div>
         </div>
-        {/* Buttons Section */}
         <div className="flex space-x-4 mt-4">
           <button
             className="btn btn-secondary shadow-xl hover:scale-105 duration-200"

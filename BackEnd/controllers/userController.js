@@ -201,6 +201,8 @@ exports.submitGivenTest = async (req, res) => {
 
         await givenTest.save();
 
+        user.allowedTests = user.allowedTests.filter(allowedTestId => allowedTestId.toString() !== testId);
+
         user.givenTests.push(givenTest._id);
         await user.save();
 

@@ -81,7 +81,7 @@ function UserProfile() {
       <Navbar />
       <div className="justify-center max-w-screen-2xl container mx-auto md:px-20 px-4 flex flex-col py-4 mt-14">
         <div className="h-fit p-6 shadow-xl border-2 border-gray-300 rounded-lg dark:border-gray-700 bg-white dark:bg-slate-800 text-black dark:text-white flex flex-col items-center mx-4">
-          <div className="w-24 h-24 flex items-center justify-center rounded-full bg-pink-500 text-white text-3xl font-bold mb-4">
+          <div className="w-24 h-24 flex items-center justify-center rounded-full bg-[#ff33cc] text-white text-3xl font-bold mb-4">
             {getInitials(user?.name || "User")}
           </div>
           <h1 className="text-xl md:text-4xl mb-4">{user?.userId || "Student ID"}</h1>
@@ -109,7 +109,7 @@ function UserProfile() {
                       className="cursor-pointer mb-2 "
                     >
                       <h3 className="text-lg font-semibold">Test Name: {getTestNameById(test.test)}</h3>
-                      <p className="text-md">Score: {test.score || "0"}</p>
+                      <p className="text-md">Score: {test.score || "0"}  / {test.answers.length}</p>
                       <p className="text-md">Submitted On: {new Date(test.createdAt).toLocaleString()}</p>
                     </div>
                     {expandedTestId === test._id && (
