@@ -115,7 +115,7 @@ function UserProfile() {
                     {expandedTestId === test._id && (
                       <div className="mt-4">
                         <h4 className="text-md font-bold mb-2">Details:</h4>
-                        <p className="text-md mb-2">Total Time Taken: {test.totalTimeTaken} m</p>
+                        <p className="text-md mb-2">Total Time Taken: {test.totalTimeTaken.toFixed(3)} m</p>
                         {/* <h4 className="text-md font-bold mb-2">Answers:</h4>
                         <ul>
                           {test.answers.map((answer, idx) => (

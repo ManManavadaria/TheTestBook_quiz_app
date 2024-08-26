@@ -10,7 +10,7 @@ function ScoreCard() {
   const [score, setScore] = useState(null);
   const [answers, setAnswers] = useState([]);
   const [testName, setTestName] = useState("");
-  const [timeTaken, setTime] = useState("")
+  const [timeTaken, setTime] = useState(null)
   const [error, setError] = useState(null);
   const token = localStorage.getItem("token");
 
@@ -69,8 +69,7 @@ function ScoreCard() {
           <h2 className="text-xl mb-4">Test: {testName}</h2>
           <div className="grid gap-4">
             <p className="text-lg mb-2">Score: {score}</p>
-            <p className="text-md mb-2">Total Time Taken: {timeTaken} m</p>
-            {/* <ul>
+            <p className="text-md mb-2">Total Time Taken: {timeTaken !== null ? `${timeTaken.toFixed(3)} m` : "Loading..."}</p>{/* <ul>
               {answers.map((item, index) => (
                 <li key={index} className="mb-4">
                   <strong>Question {index + 1}:</strong> {item.questionText}
