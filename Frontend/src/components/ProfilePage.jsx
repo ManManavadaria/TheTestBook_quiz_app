@@ -116,7 +116,7 @@ function UserProfile() {
                       <div className="mt-4">
                         <h4 className="text-md font-bold mb-2">Details:</h4>
                         <p className="text-md mb-2">Total Time Taken: {test.totalTimeTaken} m</p>
-                        <h4 className="text-md font-bold mb-2">Answers:</h4>
+                        {/* <h4 className="text-md font-bold mb-2">Answers:</h4>
                         <ul>
                           {test.answers.map((answer, idx) => (
                             <li key={idx} className="mb-2">
@@ -140,7 +140,7 @@ function UserProfile() {
                               </div>
                             </li>
                           ))}
-                        </ul>
+                        </ul> */}
                       </div>
                     )}
                   </div>
